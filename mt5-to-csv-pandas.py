@@ -9,15 +9,19 @@ if not os.path.exists(folder_name):
     os.makedirs(folder_name)
 
 # Read the CSV file from the 'data' folder into a pandas DataFrame
-filename = 'EURAUD_H4_201101022000_202306302000.csv'
+filename = 'EURAUD_H4_202001020000_202306302000.csv'
 input_file_path = os.path.join(folder_name, filename)
 df = pd.read_csv(input_file_path, sep='\t')
 
 # Remove brackets from column names, capitalize the first letter, and make the rest lowercase
 df.columns = df.columns.str.strip('<').str.strip('>').str.title()
 
-# Drop the 'VOL' column from the DataFrame
-df = df.drop(columns=['Vol'])
+# Drop the 'Vol' column from the DataFrame
+df = df.drop(columns=['Vol','Tickvol', 'Spread'])
+
+# Convert 'Date' and 'Time' columns to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+df['Time'] = pd.to_datetime(df['Time'], format='%H:%M:%S').dt.time
 
 # Derive the output filename using the specified format
 currency_pair = filename.split('_')[0]
